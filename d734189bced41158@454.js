@@ -2,7 +2,7 @@
 export default function define(runtime, observer) {
   const main = runtime.module();
   main.variable(observer()).define(["md"], function(md){return(
-md`# Projeto_VIS_Integracao`
+md`# Projeto Final - Visualização de dados`
 )});
   main.variable(observer("view")).define("view", ["md","container"], function(md,container){return(
 md`${container()}`
