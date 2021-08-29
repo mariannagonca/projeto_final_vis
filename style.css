@@ -1,0 +1,35 @@
+html`<code>css</code> <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/dc@4/dist/style/dc.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
+<style>
+#mapid {
+ width: 650px;
+ height: 380px;
+}
+
+  path.line {
+         fill: none;
+  }
+
+  .dc-chart select {
+        width: 150px;
+    }
+
+  .heat-box {
+        stroke: #E6E6E6;
+        stroke-width: 2px;
+   }
+
+  .pie-slice path {
+        stroke:#fff;
+   }
+
+  .dc-chart .selected path {
+        stroke-width: 1;
+        stroke:#fff;
+   }
+
+</style>
+`
