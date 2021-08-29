@@ -1,37 +1,33 @@
-## Welcome to GitHub Pages
+# Projeto_VIS_Integracao
 
-You can use the [editor on GitHub](https://github.com/mariannagonca/projeto_final_vis/edit/main/README.md) to maintain and preview the content for your website in Markdown files.
+https://observablehq.com/@airton-neto/projeto_vis_integracao@454
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+View this notebook in your browser by running a web server in this folder. For
+example:
 
-### Markdown
+~~~sh
+npx http-server
+~~~
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Or, use the [Observable Runtime](https://github.com/observablehq/runtime) to
+import this module directly into your application. To npm install:
 
-```markdown
-Syntax highlighted code block
+~~~sh
+npm install @observablehq/runtime@4
+npm install https://api.observablehq.com/@airton-neto/projeto_vis_integracao@454.tgz?v=3
+~~~
 
-# Header 1
-## Header 2
-### Header 3
+Then, import your notebook and the runtime as:
 
-- Bulleted
-- List
+~~~js
+import {Runtime, Inspector} from "@observablehq/runtime";
+import define from "@airton-neto/projeto_vis_integracao";
+~~~
 
-1. Numbered
-2. List
+To log the value of the cell named “foo”:
 
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/mariannagonca/projeto_final_vis/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+~~~js
+const runtime = new Runtime();
+const main = runtime.module(define);
+main.value("foo").then(value => console.log(value));
+~~~

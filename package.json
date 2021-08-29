@@ -1,0 +1,14 @@
+{
+  "name": "@airton-neto/projeto_vis_integracao",
+  "main": "d734189bced41158@454.js",
+  "version": "454.0.0",
+  "homepage": "https://observablehq.com/@airton-neto/projeto_vis_integracao",
+  "author": {
+    "name": "Airton Neto",
+    "url": "https://observablehq.com/@airton-neto"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "@observablehq/runtime": "4"
+  }
+}
