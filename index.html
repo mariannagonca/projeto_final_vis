@@ -1,1 +1,107 @@
 
+function container() { 
+  return `
+<main role="main" class="container">
+
+
+    <div class="row">
+      <h2>Parque Eólico Ventos João Câmara</h2>
+    </div>
+    <div class="row">
+      <h6>O parque eólico Ventos João Câmara, localizado na região da cidade cearense de mesmo nome, é um dos maiores complexos eólicos do nordeste, reconhecido pelo seu alto desempenho em geração de energia. O parque opera desde o início de 2018.</h6>
+      <h6>Entre os principais KPIs do setor, destacamos a geração, disponibilidade e recurso eólico.</h6>
+    </div>
+
+    <br>
+
+    <div id='select1'>
+      <div>
+        <a class='reset'
+           href='javascript:select1.filterAll();dc.redrawAll();'
+           style='visibility: hidden;'>reset</a>
+      </div>
+    </div>
+
+
+    <br>
+
+  <div class='row'>
+        <div id="mapid" class="col-6"></div>
+        <div class="col-6">
+          <div id='bulletGen'>
+            <h5> </h5>
+          </div>
+          <div id='bulletDisp'>
+            <h5> </h5>
+          </div>
+          <div id='bulletWind'>
+            <h5> </h5>
+          </div>
+        </div>
+    </div>
+
+    <br><br><br><br>
+
+    <div class="row">
+      <h2>Topologia do Complexo</h2>
+    </div>
+    <div class="row">
+      <h6>A seguir, estão dispostos os 4 subparques dessa usina, cada um com 14 turbinas, totalizando 56 aerogeradores e uma capacidade instalada de 112 MW.</h6>
+    </div>
+
+    <br>
+
+    <div class='row'>
+        <div id='pie-chart' class="single-col">
+          <h5></h5>
+        </div>
+    </div>
+
+    <br><br><br><br>
+
+    <div class="row">
+      <h2>Perfil Energético do Parque</h2>
+    </div>
+    <div class="row">
+      <h6>A seguir vemos o perfil de geração do parque ao longo dos anos. É possível ver a característica de alta geração entre junho e setembro, devido à sazonalidade do recurso eólico.</h6>
+    </div>
+
+    <br>
+
+    <div class='row'>
+        <div id='heatmap-chart' class="single-col">
+          <h5> Produção de energia em MWh por parque e mês do ano</h5>
+        </div>
+            
+        <div id='month-chart' class="single-col">
+          <h5> Produção de energia em MWh por mês </h5>
+        </div>
+
+        <div id='composite-chart' class="single-col">
+          <h5> Geração de energia em MWh por dia </h5>
+        </div>
+
+      </div>
+
+    <br><br><br><br>
+
+    <div class="row">
+      <h2>Dias com Maior Geração</h2>
+    </div>
+
+    <br>
+
+        <table class="table table-hover" id="dc-table-graph">
+            <thead>
+                <tr class="header">
+                    <th>Subparque</th>
+                    <th>AEG</th>
+                    <th>Dia</th>
+                    <th>Geração</th>
+                </tr>
+            </thead>
+        </table>
+
+  </main>
+ `
+}
