@@ -26,12 +26,21 @@ import {Runtime, Library, Inspector} from "./runtime.js";
 const runtime = new Runtime();
 const main = runtime.module(define name => {
                            if (name == "buildvis"){
-                               return new Inspector(document.getElementById("buildvis"));
-}
-                            else if (name == "container"){
-                                return new Inspector(document.getElementById("container"));
-  
-    }
+                               return new Inspector(document.getElementById("buildvis")); 
+      }
+    });
+      
+   <div id ="container"> </div>
+    <script type="module">
+
+import define from "./index.js";
+import {Runtime, Library, Inspector} from "./runtime.js";
+
+const runtime = new Runtime();
+const main = runtime.module(define name => {
+                           if (name == "container"){
+                               return new Inspector(document.getElementById("container")); 
+      }
     });
 
   </script>
