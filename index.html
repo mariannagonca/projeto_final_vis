@@ -1,47 +1,526 @@
 <!DOCTYPE html>
-<head> 
-<meta charset="utf-8">
-<title>Projeto final - Visualização de dados</title>
-<link rel="stylesheet" type="text/css" href="./inspector.css">
-<style>
-  line.link {
-    fill:none;
-    stroke: #ddd;
-    stroke-opacity: 0.8;
-    stroke-width: 1.5px;
-  }
+<html>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title> Projeto Datavis</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
+
+   <!-- Make sure you put this AFTER Leaflet's CSS -->
+   <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+   integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+   crossorigin=""></script>
+
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/dc@4/dist/style/dc.css" />
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://unpkg.com/crossfilter2@1.5.2/crossfilter.min.js"></script>
+    <script src="https://unpkg.com/dc@4.0.5/dist/dc.min.js"></script>
+  
+  <style>
+    #mapid {
+     width: 650px;
+     height: 380px;
+    }
+
+    path.line {
+           fill: none;
+    }
+
+    .dc-chart select {
+          width: 150px;
+      }
+
+    .heat-box {
+          stroke: #E6E6E6;
+          stroke-width: 2px;
+     }
+
+    .dc-chart .pie-slice {
+      fill: #040404;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .pie-slice path {
+          stroke:#fff;
+     }
+
+    .dc-chart .selected path {
+          stroke-width: 1;
+          stroke:#fff;
+     }
+
   </style>
 </head>
 <body>
-  
-  <h1> Parque Eólico VJC</h1>
-    <p> Parágrafo </p>
+  <main role="main" class="container">
+
+
+    <div class="row">
+      <h1><b>Parque Eólico Ventos João Câmara</b></h1>
+    </div>
+    <div class="row">
+      <h5>O parque eólico Ventos João Câmara, localizado na região da cidade cearense de mesmo nome, é um dos maiores complexos eólicos do nordeste, reconhecido pelo seu alto desempenho em geração de energia. O parque opera desde o início de 2018.</h5>
+      <h5>Entre os principais KPIs do setor, destacamos a geração, disponibilidade e recurso eólico.</h5>
+    </div>
+    <br>
+
+  <div class='row'>
+        <div id="mapid" class="col-6"></div>
+        <div class="col-6">
+          <div id='bulletGen'>
+            <h5> </h5>
+          </div>
+          <div id='bulletDisp'>
+            <h5> </h5>
+          </div>
+          <div id='bulletWind'>
+            <h5> </h5>
+          </div>
+        </div>
+    </div>
+
+    <br><br><br><br>
+
+    <div class="row">
+      <h2><b>Topologia do Complexo</b></h2>
+    </div>
+    <div class="row">
+      <h5>A seguir, estão dispostos os 4 subparques dessa usina, cada um com 14 turbinas, totalizando 56 aerogeradores e uma capacidade instalada de 112 MW.</h5>
+    </div>
+
+    <br>
+
+    <div class='row'>
+        <div id='pie-chart' class="single-col">
+          <h5></h5>
+        </div>
+    </div>
+
+    <br><br><br><br>
+
+    <div class="row">
+      <h2><b>Perfil Energético do Parque</b></h2><br>
+    </div>
+    <div class="row">
+      <h5>A seguir vemos o perfil de geração do parque ao longo dos anos. É possível ver a característica de alta geração entre junho e setembro, devido à sazonalidade do recurso eólico.</h5>
+    </div>
+
+    <br>
+
+    <div class='row'>
+        <div id='heatmap-chart' class="single-col">
+          <h5> Produção de energia em MWh por parque e mês do ano</h5><br>
+        </div><br>
+        <div id='month-chart' class="single-col">
+          <br><br>
+          <h5> Produção de energia em MWh por mês </h5><br>
+        </div><br>
+
+        <div id='composite-chart' class="single-col">
+          <br><br>
+          <h5> Geração de energia em MWh por dia </h5><br>
+        </div><br>
+
+      </div>
+
+    <br><br>
+
+    <div class="row">
+      <h2>Dias com maior geração de energia</h2>
+    </div>
+
+    <br>
+
+        <table class="table table-hover" id="dc-table-graph">
+            <thead>
+                <tr class="header">
+                    <th>Subparque</th>
+                    <th>AEG</th>
+                    <th>Dia</th>
+                    <th>Geração</th>
+                </tr>
+            </thead>
+        </table>
+
+  </main>
+  <script type="text/javascript">
+    const width = 800;
+    const height = 400;
+    let format = d3.format(".1f");
+    let bulletGen = dc.rowChart("#bulletGen");
+    let bulletDisp = dc.rowChart("#bulletDisp");
+    let bulletWind = dc.rowChart("#bulletWind");
+    let monthBarChart = dc.barChart("#month-chart");
+    let heatMapChart = dc.heatMap("#heatmap-chart");
+    let sunBurstChart = dc.sunburstChart("#pie-chart");
+    let compoChart = dc.compositeChart("#composite-chart");
+    let dataTable = dc.dataTable("#dc-table-graph");
+
+    let map = L.map('mapid').setView([-2.87369,-39.92208], 15)
+     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="http://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+      minZoom: 11,
+      maxZoom: 17
+    }).addTo(map)
     
-  <div id ="buildvis"> </div>
-    <script type="module">
+    let layerList = [];
+    let circles = d3.map();
+    let FULLWIDTH = 800;
 
-import define from "./index.js";
-import {Runtime, Library, Inspector} from "./runtime.js";
+    let greenIcon = L.icon({
+        iconUrl: 'https://static.thenounproject.com/png/62953-200.png',
+        //iconUrl: 'https://creazilla-store.fra1.digitaloceanspaces.com/cliparts/1631825/wind-turbine-clipart-xl.png',
+        iconSize:     [68, 70], // size of the icon
+        iconAnchor:   [35, 35], // point of the icon which will correspond to marker's location
+        popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+      }); 
 
-const runtime = new Runtime();
-const main = runtime.module(define name => {
-                           if (name == "buildvis"){
-                               return new Inspector(document.getElementById("buildvis")); 
-      }
-    });
+    let promises = [
+      d3.csv('https://gist.githubusercontent.com/eversonm/62c66ffc8a7a4429daa6be790e0f3749/raw/f00b7f26c66b75f908d142ffcf13c251ed6cf073/_dados.csv').then(function (data) {
+        let parseDate = d3.utcParse("%Y-%m-%d")
+        let dateFormatSpecifier = "%Y-%m-%d";
+        const dateFormat = d3.timeFormat(dateFormatSpecifier);
+        const dateFormatParser = d3.timeParse(dateFormatSpecifier);
+        // let month = d3.timeFormat("%Y-%m")
+        let monthA = d3.timeFormat("%b")
+        let parseMonth = d3.timeFormat("%m") //%b for abbreviated month 
+        let parseWeek = d3.timeFormat("%w") // %A for abbreviated week
+        data.forEach(function (d){
+          // d.month = parseMonth(parseDate(d.day))
+          d.dtg = parseDate(d.day)
+          d.day = dateFormatParser(d.day)
+          d.year = +d.year
+          d.week = parseWeek(d.day)
+          d.month = +parseMonth(d.day)-1
+          d.monthAux = monthA(d.day) 
+          d.generation = +d.generation
+          d.producible_energy = +d.producible_energy
+          d.availability = +d.availability
+          d.unavailability  = 100 - (+d.availability)
+          d.efficiency = +d.efficiency
+          d.generation_goal = +d.generation_goal
+          d.wind_speed = +d.wind_speed
+          d.wind_speed_goal = + d.wind_speed_goal
+          d.availability_goal = +d.availability_goal*100
+          d.efficiency_goal = +d.efficiency_goal
+          d.subpark_id = +d.subpark_id
+
+        }); return data;}), 
+      d3.csv('https://gist.githubusercontent.com/airton-neto/ecbc20944793481e707c22e51447c426/raw/5d03c8459c7d8b7ac070d8cb8445c9d73a6efe1e/subpark.csv').then(function (data) {
+          data.forEach(function(d) {
+            d.lat = +d.latitude;
+            d.long = +d.longitude;
+            d.subpark_id = +d.subpark_id;
+
+            let circle = L.marker([d.latitude, d.longitude], {icon: greenIcon}).addTo(map);
+               circle.bindPopup("Subparque: " + d.subpark);
+               circle.subpark_id = d.subpark_id; //para a interação na outra direção
+               circles.set(d.subpark_id, circle);
+            }); return data;})
+      ]
+   
+Promise.all(promises).then(ready);
+    
+function ready([_dados, subpark]) {      
+      let facts = crossfilter(_dados);
+      let yearDim = facts.dimension(d => d.year);
+      let prodYearGroup = yearDim.group().reduceSum(d => d.generation);
+
+      let facts2 = crossfilter(subpark);
+      let idDimension = facts2.dimension(d => d.subpark_id);
+      let idGrouping = idDimension.group();
       
-   <div id ="container"> </div>
-    <script type="module">
+      let dispYearGroup = 
+        // MAP: create a group ("bin") per brand name (e.g. "BMW")
+        yearDim
+        .group()
+        // REDUCE: incrementally calculate average power inside each group)
+        .reduce (
+          // add 
+          function (p,v){
+            p.totalPower += +v.availability; 
+            p.count++; 
+            p.avg = (p.totalPower / p.count);
+            return p;
+          },
+          // remove
+          function (p,v){
+            p.totalPower -= +v.availability; 
+            p.count--; 
+            p.avg = (p.totalPower / p.count);
+            return p;
+          },
+          // init
+          function init (){ 
+            return {
+              totalPower: 0, 
+              count: 0,
+              avg: 0
+            };
+          }
+         )
+      // order group using the resulting average from the reduce step 
+      .order (function (d){return d.avg;});
+      let windYearGroup = 
+        // MAP: create a group ("bin") per brand name (e.g. "BMW")
+        yearDim
+        .group()
+        // REDUCE: incrementally calculate average power inside each group)
+        .reduce (
+          // add 
+          function (p,v){
+            p.totalPower += +v.wind_speed; 
+            p.count++; 
+            p.avg = (p.totalPower / p.count);
+            return p;
+          },
+          // remove
+          function (p,v){
+            p.totalPower -= +v.wind_speed; 
+            p.count--; 
+            p.avg = (p.totalPower / p.count);
+            return p;
+          },
+          // init
+          function init (){ 
+            return {
+              totalPower: 0, 
+              count: 0,
+              avg: 0
+            };
+          }
+         )
+         // order group using the resulting average from the reduce step 
+         .order (function (d){return d.avg;});
+      let dateDim = facts.dimension(d => d.day);
+      let maxGenEnergyByDayGroup = dateDim.group().reduceSum(d => d.generation);
+      let monthDim = facts.dimension(d => d.monthAux);
+      let wtgDim = facts.dimension(d => d.wtg);
+      let prodEnergyByMonthGroup = monthDim.group().reduceSum(d => d.producible_energy);
+      let prodEnergyExpected = dateDim.group().reduceSum(d => d.generation_goal);
+      let prodEnergy = dateDim.group().reduceSum(d => d.generation);
 
-import define from "./index.js";
-import {Runtime, Library, Inspector} from "./runtime.js";
+      let months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      let months_ = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+      let sub_ = ["Ventos Alisios I", "Ventos Alisios II","Ventos Juninos I","Ventos Juninos II"];
+      let heatDim = facts.dimension(d => [d.month, d.subpark_id]);
+      let heatGroup = heatDim.group().reduceSum(d => d.generation);
+      let sunBurstDim = facts.dimension(d => [d.subpark, d.wtg]);
+      let sunBurstGroup = sunBurstDim.group().reduceSum(d => d.generation);
 
-const runtime = new Runtime();
-const main = runtime.module(define name => {
-                           if (name == "container"){
-                               return new Inspector(document.getElementById("container")); 
-      }
-    });
+      const compoScale = d3.scaleTime()
+                            .domain([dateDim.bottom(1)[0].day, dateDim.top(1)[0].day]);
 
+      const timeScale = d3.scaleTime()
+                          .domain(d3.extent(_dados, d => d.day));
+     
+      const yearScale = d3.scaleLinear()
+                          .range([0,width])
+                          .domain([d3.min(_dados, d => d.year)- 0.5, d3.max(_dados, d => d.year)+ 0.5]);
+      
+      const xScale = d3.scaleBand()
+                        .domain(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]);
+
+      const ordinalScale = d3.scaleOrdinal()
+                           .domain(d3.extent(_dados, d => d.year));
+
+      const customScaleBlues = d3.scaleSequential(d3.interpolateBlues).domain([
+        heatGroup.top(heatGroup.size())[heatGroup.size()-1].value, 
+        heatGroup.top(1)[0].value]
+      );
+
+      bulletGen
+        .width(300)
+        .height(120)
+        .margins({top: 5, left: 30, right: 10, bottom: -1})
+        .dimension(yearDim)
+        .group(prodYearGroup)
+        .colors((d) => '#7cb5ec')
+        .label(function (d){
+           return d3.format(".1f")(d.value/1000) + " GWh for year " + d.key;
+        })
+        .title(function(d){return "Geração de energia: "+format(d.value)+"W";})
+        .elasticX(true)
+        .xAxis().ticks(0);
+        bulletGen.render();
+
+      bulletDisp
+        .width(300)
+        .height(120)
+        .margins({top: 5, left: 30, right: 10, bottom: -1})
+        .dimension(yearDim)
+        .group(dispYearGroup)
+        .valueAccessor(p => p.value.avg)
+        .colors((d) => '#7cb5ec')
+        .label(function (d){
+           return d3.format(".1f")(d.value.avg) + " % for year " + d.key;
+        })
+        .title(function(d){return "Porcentagem média: "+ format(d.value.avg)+"%";})
+        .elasticX(true)
+        .xAxis().ticks(0);
+        bulletDisp.render();
+
+      bulletWind
+        .width(300)
+        .height(120)
+        .margins({top: 5, left: 30, right: 10, bottom: -1})
+        .dimension(yearDim)
+        .group(windYearGroup)
+        .valueAccessor(p => p.value.avg)
+        .colors((d) => '#7cb5ec')
+        .label(function (d){
+           return d3.format(".1f")(d.value.avg) + " m/s for year " + d.key;
+        })
+        .title(function(d){return "Velocidade do vento: "+format(d.value.avg)+ "m/s";})
+        .elasticX(true)
+        .xAxis().ticks(0);
+        bulletWind.render();
+
+      AddYAxis(bulletGen, "Geração");
+      AddYAxis(bulletDisp, "Disponibilidade");
+      AddYAxis(bulletWind, "Vel. do Vento");
+
+      sunBurstChart.width(FULLWIDTH)
+                    .height(600)
+                    .innerRadius(100)
+                    .dimension(sunBurstDim)
+                    .group(sunBurstGroup)
+                    .colors(d3.scaleOrdinal(d3.schemeBlues[6]))
+                    .title(function(d) {
+                      return (
+                        "Unidade: " + d.key + "\n" +
+                        "Geração de energia: " + format(d.value) + " MWh"
+                      );
+                    })
+
+      monthBarChart.yAxis().ticks(10)
+      monthBarChart.width(FULLWIDTH)
+               .height(300)
+               .margins({top: 10, right: 20, bottom: 20, left:60})
+               .dimension(monthDim)
+               .x(xScale)
+               .group(prodEnergyByMonthGroup)
+               .xUnits(dc.units.ordinal)
+               .elasticY(true)
+               .ordinalColors(['#7cb5ec'])
+               .renderHorizontalGridLines(true)
+               .gap(20)
+               .title(function(d) {
+                      return ( d.key +": "+ format(d.value)+ " MWh");
+                })
+
+      compoChart.width(FULLWIDTH)
+              .height(350)
+              .margins({top: 50, right: 50, bottom: 25, left: 40})
+              .dimension(dateDim)
+              .x(compoScale)
+              .xUnits(d3.timeDays)
+              .renderHorizontalGridLines(true)
+              .legend(dc.legend().x(width-300).y(5).itemHeight(13).gap(5))   
+              .compose([
+                  dc.barChart(compoChart)
+                    .group(prodEnergy, 'Geração')
+                    .ordinalColors(['#7cb5ec']),
+                  dc.lineChart(compoChart)
+                    .group(prodEnergyExpected, 'Geração Esperada')
+                    .ordinalColors(['black'])]);
+
+      heatMapChart
+          .width(FULLWIDTH)
+          .height(300)
+          .margins({ top: 10, right: 10, bottom: 20, left: 90 })
+          .dimension(heatDim)
+          .group(heatGroup)
+          .rowsLabel(d => sub_[d])
+          .colsLabel(d => months[d])
+          .keyAccessor(function(d) {return +d.key[0];})
+          .valueAccessor(function(d) { return +d.key[1]; })
+          .colorAccessor(function(d) { return +d.value; })
+          .title(function(d) {
+            return (
+              "Mês: " + months_[d.key[0]] + "\n" +
+              "Subparque: " + sub_[d.key[1]] + "\n" +
+              "Geração de energia: " + format(d.value) + "MWh"
+            );
+          })
+          .colors(customScaleBlues)
+          .calculateColorDomain();
+
+       dataTable.width(FULLWIDTH)
+          .height(700)
+          .dimension(dateDim)
+          .group(d => "")
+          .size(4)
+          .columns([
+            'subpark',
+            'wtg',
+            'day',
+            'generation'])
+          .sortBy(d => d.generation)
+          .order(d3.descending);
+  map.on('moveend', updateFilters)
+  dc.renderAll();
+  updateMarkers(); 
+
+  function updateMarkers(){
+   let ids = idGrouping.all()
+   let todisplay = new Array(ids.length) //preallocate array to be faster
+   let mc = 0; //counter of used positions in the array
+   for (let i = 0; i < ids.length; i++) {
+   let tId = ids[i];
+   if(tId.value > 0){ //when an element is filtered, it has value > 0
+   todisplay[mc] = circles.get(tId.key)
+   mc = mc + 1
+   }
+   }
+   todisplay.length = mc; //resize the array so Leaflet does not complain
+   if (layerList.length == 1) {
+   layerList[0].clearLayers() //remove circles in layerGroup
+   if (map.hasLayer(layerList[0])){
+   map.removeLayer(layerList[0]) //remove layerGroup if present
+   }
+   }
+   layerList[0] = L.layerGroup(todisplay).addTo(map) //add it again passing the array of markers
+   }
+
+  function updateFilters(e){
+    let visibleMarkers = new Array(layerList.length);
+     let mc = 0;
+   layerList[0].eachLayer(function(layer) {
+   if( e.target.getBounds().contains(layer.getLatLng()) )
+  //add layer.subpark_id to some array visibleMarkers
+     visibleMarkers[mc] = layer.subpark_id
+     mc = mc + 1;
+   })
+   idDimension.filterFunction(function(d) {
+   return visibleMarkers.indexOf(d) > -1;
+   });
+   dc.redrawAll();
+  }         
+}
+function AddYAxis(chartToUpdate, displayText){
+  chartToUpdate.svg()
+              .append("text")
+              .attr("class", "y-axis-label")
+              .attr("text-anchor", "middle")
+              .attr("x", -60)
+              .attr("y", 20)
+              .attr("transform", "rotate(-90)")
+              .text(displayText);
+}
+  
   </script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+        
 </body>
+</html>
