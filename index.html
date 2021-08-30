@@ -27,11 +27,11 @@ const runtime = new Runtime();
 const main = runtime.module(define name => {
                            if (name == "buildvis"){
                                return new Inspector(document.getElementById("buildvis"));
+}
                             else if (name == "container"){
                                 return new Inspector(document.getElementById("container"));
-                            }
   
-                          }
+    }
     });
 
   </script>
